@@ -1,0 +1,157 @@
+create view pedidos_fornecedor as
+select fornecedor.nomeF, Fornecedor.cidade, nome.pecaP, Pedidofor.qtde
+from PedidoFor
+join Fornecedor on PedidoFor.codf = PedidoFor.codf
+join Peca on PedidoFor codp = PedidoFor.codp
+
+create view DetalhesPF as
+select nomeF, cidade, nomeP, qtde, cor
+from pedidos PF
+join fornecedor F onn PF.codF = F.codF
+join Peca P on PF.codeP = p.codP;
+select * from DetalhesPF;
+
+-- Exercício 4: View de Peso Médio das Peças por Tipo
+
+
+CREATE VIEW peso_medio_por_tipo AS
+SELECT 
+  p.tipo,
+  AVG(p.peso) AS peso_medio
+FROM 
+  pecas p
+GROUP BY 
+  p.tipo;
+
+
+-- Exercício 5: View de Quantidade Total de Pedidos por Tipo de Peça
+
+
+CREATE VIEW quantidade_total_por_tipo AS
+SELECT 
+  p.tipo,
+  p.nome,
+  SUM(pe.quantidade) AS quantidade_total
+FROM 
+  pecas p
+  JOIN pedidos pe ON p.codigo = pe.codigo_peca
+GROUP BY 
+  p.tipo, p.nome;
+
+
+-- Exercício 6: View de Fornecedores com Pedidos Pendentes
+
+
+CREATE VIEW fornecedores_com_pedidos_pendentes AS
+SELECT 
+  f.codigo,
+  f.nome,
+  f.cidade
+FROM 
+  fornecedores f
+  JOIN pedidos p ON f.codigo = p.codigo_fornecedor
+WHERE 
+  p.status = 'Pendente';
+
+
+-- xercício 7: View de Pedidos com Quantidade Inferior a 50
+
+
+CREATE VIEW pedidos_com_quantidade_inferior_a_50 AS
+SELECT 
+  p.codigo_peca,
+  p.nome,
+  pe.quantidade,
+  pe.codigo_fornecedor
+FROM 
+  pedidos pe
+  JOIN pecas p ON pe.codigo_peca = p.codigo
+WHERE 
+  pe.quantidade < 50;
+
+
+-- xercício 8: View de Peso Médio dos Pedidos por Fornecedor
+
+
+CREATE VIEW peso_medio_por_fornecedor AS
+SELECT 
+  f.codigo,
+  f.nome,
+  AVG(p.peso * pe.quantidade) AS peso_medio
+FROM 
+  pedidos pe
+  JOIN pecas p ON pe.codigo_peca = p.codigo
+  JOIN fornecedores f ON pe.codigo_fornecedor = f.codigo
+GROUP BY 
+  f.codigo, f.nome;
+
+
+-- Exercício 9: View de Peças com Peso Inferior a 500g
+
+
+CREATE VIEW pecas_com_peso_inferior_a_500g AS
+SELECT 
+  p.codigo,
+  p.nome,
+  p.peso,
+  p.cor
+FROM 
+  pecas p
+WHERE 
+  p.peso < 500;
+
+
+-- Exercício 10: View de Peças Recebidas por Fornecedor
+
+
+CREATE VIEW pecas_recebidas_por_fornecedor AS
+SELECT 
+  f.nome,
+  p.nome,
+  SUM(pe.quantidade) AS quantidade_recebida,
+  p.cor
+FROM 
+  pedidos pe
+  JOIN pecas p ON pe.codigo_peca = p.codigo
+  JOIN fornecedores f ON pe.codigo_fornecedor = f.codigo
+WHERE 
+  pe.status = 'Recebido'
+GROUP BY 
+  f.nome, p.nome, p.cor;
+
+
+-- Exercício 11: View de Total de Pedidos por Fornecedor
+
+
+CREATE VIEW total_de_pedidos_por_fornecedor AS
+SELECT 
+  f.nome,
+  COUNT(pe.codigo) AS total_de_pedidos
+FROM 
+  pedidos pe
+  JOIN fornecedores f ON pe.codigo_fornecedor = f.codigo
+GROUP BY 
+  f.nome;
+
+
+
+-- Exercício 12: View de Peças Mais Pesadas por Tipo
+
+
+CREATE VIEW pecas_mais_pesadas_por_tipo AS
+SELECT 
+  p.codigo,
+  p.nome,
+  p.peso,
+  p.tipo
+FROM 
+  pecas p
+WHERE 
+  (p.tipo, p.peso) IN (
+    SELECT 
+      tipo, MAX(peso)
+    FROM 
+      pecas
+    GROUP BY 
+      tipo
+  );
